@@ -1,1 +1,4 @@
-'role' => \App\Http\Middleware\RoleMiddleware::class,
+protected $middlewareAliases = [
+    // ... los que ya tengas
+    'role' => \App\Http\Middleware\RoleMiddleware::class,
+];

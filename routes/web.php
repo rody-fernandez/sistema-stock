@@ -9,9 +9,19 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-Route::get('/', function () {
-    return view('welcome');
-});
+//Route::get('/admin', fn () => view('admin.dashboard'))
+  //  ->middleware(['auth', 'role:admin'])
+    //->name('admin.dashboard');
+
+
+Route::get('/admin', fn () => view('admin.dashboard'))
+    ->middleware(['auth', \App\Http\Middleware\RoleMiddleware::class . ':admin'])
+    ->name('admin.dashboard');
+
+Route::get('/user', fn () => view('user.dashboard'))
+    ->middleware(['auth'])
+    ->name('user.dashboard');
+
 
 Route::get('/dashboard', function () {
     return view('dashboard');
