@@ -1,10 +1,7 @@
 <?php
 
 namespace Database\Seeders;
-$this->call(AdminUserSeeder::class);
 
-use App\Models\User;
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -14,11 +11,18 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+        // 👉 acá llamás a tus seeders personalizados
+        $this->call([
+            RolesAndUsersSeeder::class,
+        ]);
+
+        // Si querés seguir creando usuarios de prueba con factories
         // User::factory(10)->create();
 
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-        ]);
+        // Ejemplo de un usuario de prueba simple:
+        // User::factory()->create([
+        //     'name' => 'Test User',
+        //     'email' => 'test@example.com',
+        // ]);
     }
 }
