@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
@@ -22,7 +23,6 @@ Route::get('/', function () {
 
 // Grupo de rutas protegidas (auth + email verificado)
 Route::middleware(['auth', 'verified'])->group(function () {
-
     // Dashboard general
     Route::get('/dashboard', function () {
         return view('dashboard');
@@ -33,19 +33,20 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    // Panel Admin (solo usuarios con rol admin)
-    Route::get('/admin', function () {
-        return view('admin.dashboard');
-    })->middleware('role:admin')->name('admin.dashboard');
-
     // Panel Usuario (cualquier usuario logueado)
     Route::get('/user', function () {
-        return view('user.dashboard');
+        return view('users.dashboard');
     })->name('user.dashboard');
+
+    // Panel Admin (solo usuarios con rol admin)
+    Route::middleware('role:admin')->group(function () {
+        Route::get('/admin', function () {
+            return view('admin.dashboard');
+        })->name('admin.dashboard');
+
+        Route::resource('products', ProductController::class);
+    });
 });
-
-Route::resource('products', ProductController::class)->middleware(['auth','role:admin']);
-
 
 // Rutas de autenticación (login, register, forgot password, etc.)
 require __DIR__.'/auth.php';

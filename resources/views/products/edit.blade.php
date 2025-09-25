@@ -1,48 +1,101 @@
+<x-app-layout>
+    <x-slot name="header">
+        <h2 class="text-xl font-semibold leading-tight text-gray-800">
+            {{ __('Editar producto') }}
+        </h2>
+    </x-slot>
 
-@extends('layouts.app')
+    <div class="py-12">
+        <div class="mx-auto max-w-3xl sm:px-6 lg:px-8">
+            <div class="overflow-hidden bg-white shadow-sm sm:rounded-lg">
+                <div class="p-6">
+                    <form action="{{ route('products.update', $product) }}" method="POST" enctype="multipart/form-data" class="space-y-6">
+                        @csrf
+                        @method('PUT')
 
-@section('content')
-<div class="container">
-    <h1>Editar Producto</h1>
+                        <div class="grid gap-6 sm:grid-cols-2">
+                            <div class="sm:col-span-2">
+                                <label for="name" class="block text-sm font-medium text-gray-700">{{ __('Nombre') }}</label>
+                                <input type="text" name="name" id="name" value="{{ old('name', $product->name) }}" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" />
+                                @error('name')
+                                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                @enderror
+                            </div>
 
-    <form action="{{ route('products.update',$product) }}" method="POST" enctype="multipart/form-data">
-        @csrf @method('PUT')
-        <div class="mb-3">
-            <label>Nombre</label>
-            <input type="text" name="name" value="{{ $product->name }}" class="form-control" required>
+                            <div>
+                                <label for="code" class="block text-sm font-medium text-gray-700">{{ __('Código') }}</label>
+                                <input type="text" name="code" id="code" value="{{ old('code', $product->code) }}" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" />
+                                @error('code')
+                                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                @enderror
+                            </div>
+
+                            <div>
+                                <label for="category_id" class="block text-sm font-medium text-gray-700">{{ __('Categoría') }}</label>
+                                <select name="category_id" id="category_id" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                                    <option value="">{{ __('Sin categoría') }}</option>
+                                    @foreach ($categories as $category)
+                                        <option value="{{ $category->id }}" @selected(old('category_id', $product->category_id) == $category->id)>{{ $category->name }}</option>
+                                    @endforeach
+                                </select>
+                                @error('category_id')
+                                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                @enderror
+                            </div>
+
+                            <div>
+                                <label for="stock" class="block text-sm font-medium text-gray-700">{{ __('Stock disponible') }}</label>
+                                <input type="number" name="stock" id="stock" min="0" value="{{ old('stock', $product->stock) }}" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" />
+                                @error('stock')
+                                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                @enderror
+                            </div>
+
+                            <div>
+                                <label for="cost_price" class="block text-sm font-medium text-gray-700">{{ __('Precio de compra') }}</label>
+                                <input type="number" name="cost_price" id="cost_price" step="0.01" min="0" value="{{ old('cost_price', $product->cost_price) }}" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" />
+                                @error('cost_price')
+                                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                @enderror
+                            </div>
+
+                            <div>
+                                <label for="sale_price" class="block text-sm font-medium text-gray-700">{{ __('Precio de venta') }}</label>
+                                <input type="number" name="sale_price" id="sale_price" step="0.01" min="0" value="{{ old('sale_price', $product->sale_price) }}" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" />
+                                @error('sale_price')
+                                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                @enderror
+                            </div>
+                        </div>
+
+                        <div>
+                            <label for="description" class="block text-sm font-medium text-gray-700">{{ __('Descripción') }}</label>
+                            <textarea name="description" id="description" rows="4" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">{{ old('description', $product->description) }}</textarea>
+                            @error('description')
+                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <div>
+                            <label for="image" class="block text-sm font-medium text-gray-700">{{ __('Imagen') }}</label>
+                            @if ($product->image)
+                                <img src="{{ asset('storage/'.$product->image) }}" alt="{{ $product->name }}" class="mb-3 h-20 w-20 rounded object-cover">
+                            @endif
+                            <input type="file" name="image" id="image" class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:rounded-md file:border-0 file:bg-indigo-50 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-indigo-600 hover:file:bg-indigo-100" />
+                            @error('image')
+                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <div class="flex items-center justify-end gap-2">
+                            <a href="{{ route('products.index') }}" class="inline-flex items-center rounded-md border border-transparent px-4 py-2 text-sm font-semibold text-gray-600 transition hover:bg-gray-100">{{ __('Cancelar') }}</a>
+                            <button type="submit" class="inline-flex items-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                                {{ __('Actualizar') }}
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
         </div>
-        <div class="mb-3">
-            <label>Código</label>
-            <input type="text" name="code" value="{{ $product->code }}" class="form-control" required>
-        </div>
-        <div class="mb-3">
-            <label>Categoría</label>
-            <select name="category_id" class="form-control">
-                <option value="">-- Ninguna --</option>
-                @foreach($categories as $cat)
-                    <option value="{{ $cat->id }}" {{ $cat->id == $product->category_id ? 'selected':'' }}>
-                        {{ $cat->name }}
-                    </option>
-                @endforeach
-            </select>
-        </div>
-        <div class="mb-3">
-            <label>Precio Compra</label>
-            <input type="number" step="0.01" name="cost_price" value="{{ $product->cost_price }}" class="form-control" required>
-        </div>
-        <div class="mb-3">
-            <label>Precio Venta</label>
-            <input type="number" step="0.01" name="sale_price" value="{{ $product->sale_price }}" class="form-control" required>
-        </div>
-        <div class="mb-3">
-            <label>Imagen</label><br>
-            @if($product->image)
-                <img src="{{ asset('storage/'.$product->image) }}" width="80" class="mb-2"><br>
-            @endif
-            <input type="file" name="image" class="form-control">
-        </div>
-        <button class="btn btn-success">Actualizar</button>
-        <a href="{{ route('products.index') }}" class="btn btn-secondary">Cancelar</a>
-    </form>
-</div>
-@endsection
+    </div>
+</x-app-layout>
