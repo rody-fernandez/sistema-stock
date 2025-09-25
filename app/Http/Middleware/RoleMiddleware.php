@@ -3,14 +3,14 @@
 namespace App\Http\Middleware;
 
 use Closure;
-use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class RoleMiddleware
 {
-    public function handle(Request $request, Closure $next, string $role)
+    public function handle($request, Closure $next, string $role)
     {
-        if (!auth()->check() || auth()->user()->role !== $role) {
-            abort(403);
+        if (!Auth::check() || optional(Auth::user()->role)->name !== $role) {
+            abort(403, 'Acceso denegado');
         }
         return $next($request);
     }
