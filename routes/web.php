@@ -44,5 +44,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     })->name('user.dashboard');
 });
 
+Route::resource('products', ProductController::class)->middleware(['auth','role:admin']);
+
+
 // Rutas de autenticación (login, register, forgot password, etc.)
 require __DIR__.'/auth.php';
