@@ -2,19 +2,12 @@
 
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProfileController;
-use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Route; 
 
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-| Estas rutas están pensadas para tu sistema de stock:
-| - Login / Register → Breeze (require __DIR__.'/auth.php')
-| - Dashboard general
-| - Panel Admin (solo rol admin)
-| - Panel Usuario normal
-| - Perfil de usuario
-*/
+// Solo admin puede acceder a productos
+Route::middleware(['auth', 'role:admin'])->group(function () {
+    Route::resource('products', ProductController::class);
+});
 
 // Página principal → redirige al dashboard
 Route::get('/', function () {
@@ -39,13 +32,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
     })->name('user.dashboard');
 
     // Panel Admin (solo usuarios con rol admin)
-    Route::middleware('role:admin')->group(function () {
-        Route::get('/admin', function () {
-            return view('admin.dashboard');
-        })->name('admin.dashboard');
+    //Route::middleware('role:admin')->group(function () {
+      //  Route::get('/admin', function () {
+        //    return view('admin.dashboard');
+        ///})->name('admin.dashboard');
 
-        Route::resource('products', ProductController::class);
-    });
+       // Route::resource('products', ProductController::class);
+   // });
 });
 
 // Rutas de autenticación (login, register, forgot password, etc.)

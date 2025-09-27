@@ -6,28 +6,19 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('products', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('code')->unique();
             $table->text('description')->nullable();
-            $table->foreignId('category_id')->nullable()->constrained()->nullOnDelete();
-            $table->unsignedInteger('stock')->default(0);
-            $table->decimal('cost_price', 12, 2);
-            $table->decimal('sale_price', 12, 2);
-            $table->string('image')->nullable();
+            $table->decimal('price', 10, 2)->default(0);
+            $table->integer('stock')->default(0);
+            $table->string('image')->nullable(); // ruta a la imagen
             $table->timestamps();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('products');
