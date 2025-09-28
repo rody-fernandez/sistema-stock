@@ -48,3 +48,19 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
 // Rutas de autenticación (login, register, forgot password, etc.)
 require __DIR__.'/auth.php';
+
+
+Route::get('/ventas-test', function () {
+    // datos simulados
+    $customers = [
+        (object)['id' => 1, 'name' => 'Cliente Prueba'],
+        (object)['id' => 2, 'name' => 'Cliente Demo'],
+    ];
+
+    $products = [
+        (object)['id' => 1, 'name' => 'Producto A', 'price' => 100],
+        (object)['id' => 2, 'name' => 'Producto B', 'price' => 250],
+    ];
+
+    return view('sales.create', compact('customers','products'));
+});
