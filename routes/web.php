@@ -4,7 +4,11 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route; 
 use App\Http\Controllers\CustomerController;
-use App\Http\Controllers\SupplierController;
+use App\Http\Controllers\SupplierController;use App\Http\Controllers\SaleController;
+
+Route::middleware(['auth','role:admin'])->group(function () {
+    Route::resource('sales', SaleController::class)->only(['index','create','store','show']);
+});
 
 Route::middleware(['auth','role:admin'])->group(function () {
     Route::resource('customers', CustomerController::class);

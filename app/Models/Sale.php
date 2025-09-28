@@ -9,31 +9,15 @@ class Sale extends Model
 {
     use HasFactory;
 
-    protected $fillable = [
-        'customer_id',
-        'user_id',
-        'reference',
-        'sold_at',
-        'total',
-    ];
-
-    protected $casts = [
-        'sold_at' => 'date',
-        'total' => 'decimal:2',
-    ];
+    protected $fillable = ['customer_id','total'];
 
     public function customer()
     {
         return $this->belongsTo(Customer::class);
     }
 
-    public function user()
+    public function items()
     {
-        return $this->belongsTo(User::class);
-    }
-
-    public function details()
-    {
-        return $this->hasMany(SaleDetail::class);
+        return $this->hasMany(SaleItem::class);
     }
 }
