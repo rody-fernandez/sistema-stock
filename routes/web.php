@@ -3,12 +3,13 @@
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route; 
+use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\SupplierController;
 
-// Solo admin puede acceder a productos
-Route::middleware(['auth', 'role:admin'])->group(function () {
-    Route::resource('products', ProductController::class);
+Route::middleware(['auth','role:admin'])->group(function () {
+    Route::resource('customers', CustomerController::class);
+    Route::resource('suppliers', SupplierController::class);
 });
-
 // Página principal → redirige al dashboard
 Route::get('/', function () {
     return redirect()->route('dashboard');
