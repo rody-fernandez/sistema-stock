@@ -10,7 +10,7 @@ return new class extends Migration
     {
         Schema::create('sales', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('customer_id')->constrained()->onDelete('cascade');
+            $table->foreignId('customer_id')->nullable()->constrained('customers')->onDelete('set null');
             $table->decimal('total', 10, 2)->default(0);
             $table->timestamps();
         });
