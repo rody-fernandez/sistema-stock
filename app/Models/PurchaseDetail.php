@@ -4,33 +4,28 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class PurchaseDetail extends Model
 {
     use HasFactory;
 
-    protected $table = 'purchase_items';
-
     protected $fillable = [
         'purchase_id',
         'product_id',
         'quantity',
-        'unit_cost',
+        'unit_price',
         'subtotal',
     ];
 
-    protected $casts = [
-        'quantity' => 'int',
-        'unit_cost' => 'decimal:2',
-        'subtotal' => 'decimal:2',
-    ];
-
-    public function purchase()
+    /** 🔹 Relación: un detalle pertenece a una compra */
+    public function purchase(): BelongsTo
     {
         return $this->belongsTo(Purchase::class);
     }
 
-    public function product()
+    /** 🔹 Relación: un detalle pertenece a un producto */
+    public function product(): BelongsTo
     {
         return $this->belongsTo(Product::class);
     }

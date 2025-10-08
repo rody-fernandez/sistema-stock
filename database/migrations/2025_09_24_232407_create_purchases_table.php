@@ -4,27 +4,19 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
-    /**
-     * Run the migrations.
-     */
+return new class extends Migration {
     public function up(): void
     {
         Schema::create('purchases', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('supplier_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
-            $table->string('reference')->nullable();
-            $table->date('purchased_at');
-            $table->decimal('total', 12, 2);
+            $table->foreignId('supplier_id')->constrained()->onDelete('cascade');
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->timestamp('date')->nullable();
+            $table->decimal('total', 12, 2)->default(0);
             $table->timestamps();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('purchases');

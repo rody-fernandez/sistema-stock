@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Purchase extends Model
 {
@@ -12,28 +14,29 @@ class Purchase extends Model
     protected $fillable = [
         'supplier_id',
         'user_id',
-        'reference',
-        'purchased_at',
+        'date',
         'total',
     ];
 
     protected $casts = [
-        'purchased_at' => 'date',
-        'total' => 'decimal:2',
+        'date' => 'datetime',
     ];
 
-    public function supplier()
+    /** 🔹 Relación: una compra tiene muchos detalles */
+    public function details(): HasMany
+    {
+        return $this->hasMany(PurchaseDetail::class);
+    }
+
+    /** 🔹 Relación: una compra pertenece a un proveedor */
+    public function supplier(): BelongsTo
     {
         return $this->belongsTo(Supplier::class);
     }
 
-    public function user()
+    /** 🔹 Relación: una compra pertenece a un usuario */
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
-    }
-
-    public function details()
-    {
-        return $this->hasMany(PurchaseDetail::class);
     }
 }
