@@ -14,16 +14,12 @@ use App\Http\Controllers\ProfileController;
 |--------------------------------------------------------------------------
 */
 
-Route::middleware(['auth', 'role:admin'])->group(function () {
-    Route::resource('purchases', \App\Http\Controllers\PurchaseController::class);
-});
-
 // 🔹 Página inicial → redirige al dashboard
 Route::get('/', function () {
     return redirect()->route('dashboard');
 });
 
-// 🔹 Rutas protegidas por login y verificación
+// 🔹 Grupo principal (usuarios autenticados y verificados)
 Route::middleware(['auth', 'verified'])->group(function () {
 
     // Dashboard principal
@@ -41,16 +37,18 @@ Route::middleware(['auth', 'verified'])->group(function () {
         return view('users.dashboard');
     })->name('user.dashboard');
 
-    // 🔹 Rutas principales de gestión (productos, ventas, compras, clientes, proveedores)
-    Route::resource('products', ProductController::class);
-    //Route::resource('purchases', PurchaseController::class);
-    Route::resource('sales', SaleController::class);
-    Route::resource('customers', CustomerController::class);
-    Route::resource('suppliers', SupplierController::class);
+    // 🔹 Rutas de gestión disponibles solo para administradores
+    Route::middleware(['is_admin'])->group(function () {
+        Route::resource('products', ProductController::class);
+        Route::resource('purchases', PurchaseController::class);
+        Route::resource('sales', SaleController::class);
+        Route::resource('customers', CustomerController::class);
+        Route::resource('suppliers', SupplierController::class);
+    });
 });
 
 // 🔹 Rutas de autenticación (login, registro, etc.)
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';
 
 // 🔹 Ruta temporal de prueba para crear ventas (solo desarrollo)
 Route::get('/ventas-test', function () {
