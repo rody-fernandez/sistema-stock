@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 
-@import 'bootstrap/dist/css/bootstrap.min.css';
-body {
-    background-color: #f8f9fa;
-}
+@import "bootstrap/dist/css/bootstrap.min.css";
+
+/* estilos propios opcionales */
+body { background-color: #f8f9fa; }

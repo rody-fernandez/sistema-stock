@@ -14,6 +14,10 @@ use App\Http\Controllers\ProfileController;
 |--------------------------------------------------------------------------
 */
 
+Route::middleware(['auth', 'role:admin'])->group(function () {
+    Route::resource('purchases', \App\Http\Controllers\PurchaseController::class);
+});
+
 // 🔹 Página inicial → redirige al dashboard
 Route::get('/', function () {
     return redirect()->route('dashboard');
@@ -39,7 +43,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // 🔹 Rutas principales de gestión (productos, ventas, compras, clientes, proveedores)
     Route::resource('products', ProductController::class);
-    Route::resource('purchases', PurchaseController::class);
+    //Route::resource('purchases', PurchaseController::class);
     Route::resource('sales', SaleController::class);
     Route::resource('customers', CustomerController::class);
     Route::resource('suppliers', SupplierController::class);
