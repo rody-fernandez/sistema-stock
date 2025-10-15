@@ -48,11 +48,32 @@ class User extends Authenticatable
 
     public function role()
     {
-         return $this->belongsTo(Role::class);
+        return $this->belongsTo(Role::class);
     }
 
     public function isAdmin(): bool
     {
-        return optional($this->role)->name === 'admin';
+        $role = $this->role;
+
+        if ($role instanceof Role) {
+            return $role->isAdmin();
+        }
+
+        if (!$this->role_id) {
+            return false;
+        }
+
+        static $adminRoleIds;
+
+        if ($adminRoleIds === null) {
+            $adminRoleIds = Role::query()
+                ->get(['id', 'name'])
+                ->filter->isAdmin()
+                ->map(fn (Role $role) => (int) $role->getKey())
+                ->values()
+                ->all();
+        }
+
+        return in_array((int) $this->role_id, $adminRoleIds, true);
     }
 }

@@ -1,4 +1,4 @@
-<?PHP
+<?php
 
 namespace App\Http\Controllers;
 
@@ -26,16 +26,17 @@ class PurchaseController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
+        $data = $request->validate([
             'supplier_id'       => 'required|exists:suppliers,id',
-            'products.*.id'     => 'required|exists:products,id',
+            'products'          => 'required|array|min:1',
+            'products.*.id'     => 'required|exists:products,id|distinct',
             'products.*.qty'    => 'required|integer|min:1',
             'products.*.price'  => 'required|numeric|min:0',
         ]);
 
-        DB::transaction(function() use ($request) {
+        DB::transaction(function() use ($data) {
             $purchase = Purchase::create([
-                'supplier_id' => $request->supplier_id,
+                'supplier_id' => $data['supplier_id'],
                 'user_id'     => auth()->id(),
                 'date'        => now(),
                 'total'       => 0,
@@ -43,21 +44,23 @@ class PurchaseController extends Controller
 
             $total = 0;
 
-            foreach ($request->products as $item) {
-                $product  = Product::find($item['id']);
-                $subtotal = $item['qty'] * $item['price'];
+            foreach ($data['products'] as $item) {
+                $product  = Product::query()->findOrFail($item['id']);
+                $quantity = (int) $item['qty'];
+                $unitPrice = (float) $item['price'];
+                $subtotal = $quantity * $unitPrice;
                 $total   += $subtotal;
 
                 PurchaseDetail::create([
                     'purchase_id' => $purchase->id,
                     'product_id'  => $product->id,
-                    'quantity'    => $item['qty'],
-                    'unit_price'  => $item['price'],
+                    'quantity'    => $quantity,
+                    'unit_price'  => $unitPrice,
                     'subtotal'    => $subtotal,
                 ]);
 
                 // actualizar stock
-                $product->increment('stock', $item['qty']);
+                $product->increment('stock', $quantity);
             }
 
             $purchase->update(['total' => $total]);

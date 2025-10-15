@@ -11,6 +11,10 @@ class Sale extends Model
 
     protected $fillable = ['customer_id','total'];
 
+    protected $casts = [
+        'total' => 'decimal:2',
+    ];
+
     public function customer()
     {
         return $this->belongsTo(Customer::class);

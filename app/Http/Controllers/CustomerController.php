@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Customer;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class CustomerController extends Controller
 {
@@ -20,8 +21,14 @@ class CustomerController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate(['name' => 'required|string|max:150']);
-        Customer::create($request->all());
+        $data = $request->validate([
+            'name' => 'required|string|max:150',
+            'email' => ['nullable', 'email', 'max:255', 'unique:customers,email'],
+            'phone' => ['nullable', 'string', 'max:50'],
+            'address' => ['nullable', 'string', 'max:255'],
+        ]);
+
+        Customer::create($data);
 
         return redirect()->route('customers.index')->with('success','Cliente creado con éxito');
     }
@@ -33,8 +40,14 @@ class CustomerController extends Controller
 
     public function update(Request $request, Customer $customer)
     {
-        $request->validate(['name' => 'required|string|max:150']);
-        $customer->update($request->all());
+        $data = $request->validate([
+            'name' => 'required|string|max:150',
+            'email' => ['nullable', 'email', 'max:255', Rule::unique('customers', 'email')->ignore($customer->id)],
+            'phone' => ['nullable', 'string', 'max:50'],
+            'address' => ['nullable', 'string', 'max:255'],
+        ]);
+
+        $customer->update($data);
 
         return redirect()->route('customers.index')->with('success','Cliente actualizado');
     }

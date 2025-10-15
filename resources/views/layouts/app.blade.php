@@ -15,9 +15,13 @@
       <div class="collapse navbar-collapse">
         <ul class="navbar-nav ms-auto">
           @auth
-            <li class="nav-item"><a class="nav-link" href="{{ route('products.index') }}">Productos</a></li>
-            <li class="nav-item"><a class="nav-link" href="{{ route('purchases.index') }}">Compras</a></li>
-            <li class="nav-item"><a class="nav-link" href="{{ route('sales.index') }}">Ventas</a></li>
+            @if(auth()->user()->isAdmin())
+              <li class="nav-item"><a class="nav-link" href="{{ route('products.index') }}">Productos</a></li>
+              <li class="nav-item"><a class="nav-link" href="{{ route('purchases.index') }}">Compras</a></li>
+              <li class="nav-item"><a class="nav-link" href="{{ route('sales.index') }}">Ventas</a></li>
+              <li class="nav-item"><a class="nav-link" href="{{ route('customers.index') }}">Clientes</a></li>
+              <li class="nav-item"><a class="nav-link" href="{{ route('suppliers.index') }}">Proveedores</a></li>
+            @endif
             <li class="nav-item">
               <form method="POST" action="{{ route('logout') }}">@csrf
                 <button class="btn btn-link nav-link">Salir</button>
@@ -32,5 +36,6 @@
   <main class="container">@yield('content')</main>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  @stack('scripts')
 </body>
 </html>

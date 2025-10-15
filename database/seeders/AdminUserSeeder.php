@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
+use App\Models\Role;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 
@@ -10,22 +11,19 @@ class AdminUserSeeder extends Seeder
 {
     public function run(): void
     {
-        // Cambiá el email/contraseña por valores seguros en tu entorno
         $email = 'admin@example.com';
         $password = 'secret123';
 
-        $user = User::where('email', $email)->first();
+        $adminRole = Role::ensureExists('admin', Role::ADMIN_NAMES);
 
-        if (!$user) {
-            User::create([
+        User::updateOrCreate(
+            ['email' => $email],
+            [
                 'name' => 'Admin',
-                'email' => $email,
                 'password' => Hash::make($password),
-                'role' => 'admin',
-            ]);
-        } else {
-            // asegura que tenga rol admin
-            $user->update(['role' => 'admin']);
-        }
+                'role_id' => $adminRole->id,
+                'email_verified_at' => now(),
+            ]
+        );
     }
 }
