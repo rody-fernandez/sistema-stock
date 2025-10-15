@@ -8,6 +8,7 @@ use App\Models\Product;
 use App\Models\Customer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 
 class SaleController extends Controller
 {
@@ -26,46 +27,69 @@ class SaleController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
+        $data = $request->validate([
             'customer_id' => 'required|exists:customers,id',
-            'products'    => 'required|array',
-            'products.*.id' => 'required|exists:products,id',
-            'products.*.quantity' => 'required|integer|min:1'
+            'products'    => 'required|array|min:1',
+            'products.*.id' => 'required|exists:products,id|distinct',
+            'products.*.quantity' => 'required|integer|min:1',
         ]);
 
-        DB::transaction(function () use ($request) {
+        $items = collect($data['products'])
+            ->map(function (array $item, int $index) {
+                $product = Product::query()->find($item['id']);
+
+                if (!$product) {
+                    throw ValidationException::withMessages([
+                        "products.$index.id" => "El producto seleccionado ya no está disponible.",
+                    ]);
+                }
+
+                $quantity = (int) $item['quantity'];
+
+                if ($product->stock < $quantity) {
+                    throw ValidationException::withMessages([
+                        "products.$index.quantity" => "Stock insuficiente para {$product->name}. Disponible: {$product->stock}",
+                    ]);
+                }
+
+                return [
+                    'product' => $product,
+                    'quantity' => $quantity,
+                    'price' => (float) $product->price,
+                ];
+            });
+
+        DB::transaction(function () use ($data, $items) {
             $sale = Sale::create([
-                'customer_id' => $request->customer_id,
-                'total' => 0
+                'customer_id' => $data['customer_id'],
+                'total' => 0,
             ]);
 
             $total = 0;
-            foreach ($request->products as $item) {
-                $product = Product::find($item['id']);
-                $qty = $item['quantity'];
-                $price = $product->price;
 
-                // reducir stock
-                if ($product->stock < $qty) {
-                    throw new \Exception("Stock insuficiente para {$product->name}");
-                }
-                $product->decrement('stock', $qty);
+            foreach ($items as $item) {
+                $product = $item['product'];
+                $quantity = $item['quantity'];
+                $price = $item['price'];
 
-                // crear item
+                $product->decrement('stock', $quantity);
+
                 SaleItem::create([
                     'sale_id'   => $sale->id,
                     'product_id'=> $product->id,
-                    'quantity'  => $qty,
+                    'quantity'  => $quantity,
                     'price'     => $price,
                 ]);
 
-                $total += $price * $qty;
+                $total += $price * $quantity;
             }
 
             $sale->update(['total' => $total]);
         });
 
-        return redirect()->route('sales.index')->with('success','Venta registrada con éxito');
+        return redirect()
+            ->route('sales.index')
+            ->with('success','Venta registrada con éxito');
     }
 
     public function show(Sale $sale)

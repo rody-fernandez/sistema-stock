@@ -18,8 +18,15 @@ class RoleMiddleware
             abort(403, 'Acceso denegado: usuario no autenticado.');
         }
 
-        // Verifica si el usuario tiene el rol adecuado
-        if (auth()->user()->role->name !== $role) {
+        $user = auth()->user();
+
+        if (!$user->relationLoaded('role')) {
+            $user->load('role');
+        }
+
+        $roleModel = $user->role;
+
+        if (!$roleModel || !$roleModel->matchesName($role)) {
             abort(403, 'Acceso denegado: permiso insuficiente.');
         }
 

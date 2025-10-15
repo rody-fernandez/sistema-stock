@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Supplier;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class SupplierController extends Controller
 {
@@ -20,8 +21,14 @@ class SupplierController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate(['name' => 'required|string|max:150']);
-        Supplier::create($request->all());
+        $data = $request->validate([
+            'name' => 'required|string|max:150',
+            'email' => ['nullable', 'email', 'max:255', 'unique:suppliers,email'],
+            'phone' => ['nullable', 'string', 'max:50'],
+            'address' => ['nullable', 'string', 'max:255'],
+        ]);
+
+        Supplier::create($data);
 
         return redirect()->route('suppliers.index')->with('success','Proveedor creado con éxito');
     }
@@ -33,8 +40,14 @@ class SupplierController extends Controller
 
     public function update(Request $request, Supplier $supplier)
     {
-        $request->validate(['name' => 'required|string|max:150']);
-        $supplier->update($request->all());
+        $data = $request->validate([
+            'name' => 'required|string|max:150',
+            'email' => ['nullable', 'email', 'max:255', Rule::unique('suppliers', 'email')->ignore($supplier->id)],
+            'phone' => ['nullable', 'string', 'max:50'],
+            'address' => ['nullable', 'string', 'max:255'],
+        ]);
+
+        $supplier->update($data);
 
         return redirect()->route('suppliers.index')->with('success','Proveedor actualizado');
     }

@@ -3,8 +3,8 @@
 @section('content')
 <div class="container">
     <div class="d-flex justify-content-between align-items-center mb-3">
-        <h2 class="mb-0">Clientes</h2>
-        <a href="{{ route('customers.create') }}" class="btn btn-primary">+ Nuevo cliente</a>
+        <h2 class="mb-0">Proveedores</h2>
+        <a href="{{ route('suppliers.create') }}" class="btn btn-primary">+ Nuevo proveedor</a>
     </div>
 
     @if(session('success'))
@@ -23,24 +23,24 @@
                 </tr>
             </thead>
             <tbody>
-                @forelse($customers as $customer)
+                @forelse($suppliers as $supplier)
                     <tr>
-                        <td>{{ $customer->name }}</td>
-                        <td>{{ $customer->email ?? '—' }}</td>
-                        <td>{{ $customer->phone ?? '—' }}</td>
-                        <td>{{ $customer->address ?? '—' }}</td>
+                        <td>{{ $supplier->name }}</td>
+                        <td>{{ $supplier->email ?? '—' }}</td>
+                        <td>{{ $supplier->phone ?? '—' }}</td>
+                        <td>{{ $supplier->address ?? '—' }}</td>
                         <td class="text-center">
-                            <a href="{{ route('customers.edit', $customer) }}" class="btn btn-sm btn-outline-primary">Editar</a>
-                            <form action="{{ route('customers.destroy', $customer) }}" method="POST" class="d-inline">
+                            <a href="{{ route('suppliers.edit', $supplier) }}" class="btn btn-sm btn-outline-primary">Editar</a>
+                            <form action="{{ route('suppliers.destroy', $supplier) }}" method="POST" class="d-inline">
                                 @csrf
                                 @method('DELETE')
-                                <button class="btn btn-sm btn-outline-danger" onclick="return confirm('¿Eliminar cliente?')">Eliminar</button>
+                                <button class="btn btn-sm btn-outline-danger" onclick="return confirm('¿Eliminar proveedor?')">Eliminar</button>
                             </form>
                         </td>
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="5" class="text-center text-muted">Aún no hay clientes registrados.</td>
+                        <td colspan="5" class="text-center text-muted">Aún no hay proveedores registrados.</td>
                     </tr>
                 @endforelse
             </tbody>
@@ -48,7 +48,7 @@
     </div>
 
     <div class="mt-3">
-        {{ $customers->links() }}
+        {{ $suppliers->links() }}
     </div>
 </div>
 @endsection

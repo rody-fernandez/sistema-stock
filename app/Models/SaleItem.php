@@ -11,6 +11,11 @@ class SaleItem extends Model
 
     protected $fillable = ['sale_id','product_id','quantity','price'];
 
+    protected $casts = [
+        'quantity' => 'integer',
+        'price' => 'decimal:2',
+    ];
+
     public function product()
     {
         return $this->belongsTo(Product::class);

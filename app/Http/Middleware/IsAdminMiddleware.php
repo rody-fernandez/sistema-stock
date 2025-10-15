@@ -14,8 +14,13 @@ class IsAdminMiddleware
             abort(403, 'Acceso denegado: usuario no autenticado.');
         }
 
-        // Verifica si el usuario tiene role_id = 1
-        if (auth()->user()->role_id !== 1) {
+        $user = auth()->user();
+
+        if (!$user->relationLoaded('role')) {
+            $user->load('role');
+        }
+
+        if (!$user->isAdmin()) {
             abort(403, 'Acceso denegado: permiso insuficiente.');
         }
 
